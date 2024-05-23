@@ -38,6 +38,8 @@ spring:
     issuerUri: ${ISSUER_URI}
     audiences: ${AUDIENCES}
 ```
+* Note: If the `spring.azure-ad.issuerUri` and/or `spring.azure-ad.audiences` are not present in the properties file, 
+it's assumed that further verification against the issuer and audience are not needed.
 
 To find your issuer URI,
 - Use the `iss` claim in your JWT token
