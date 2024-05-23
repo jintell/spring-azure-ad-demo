@@ -1,17 +1,18 @@
 package com.jade.platform.config;
 
+import com.jade.platform.config.context.AdSecurityContextRepository;
+import com.jade.platform.config.provider.AdJwtAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /**
  * @Author: Josiah Adetayo
- * @Email: josleke@gmail.com, josiah.adetayo@meld-tech.com
+ * @Email: josiah.adetayo@sabi.am
  * @Date: 5/11/24
  */
 @Configuration
@@ -20,21 +21,23 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @RequiredArgsConstructor
 public class ResourceServer {
 
-    private final CombinedClaimConverter converter;
+    private final AdJwtAuthenticationProvider provider;
+    private final AdSecurityContextRepository contextRepository;
 
     @Bean
     public SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
+
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authenticationManager(provider)
+                .securityContextRepository(contextRepository)
                 .authorizeExchange(authorizeExchangeSpec ->
                         authorizeExchangeSpec
                                 .pathMatchers(AUTH_WHITELIST)
                                 .permitAll()
                                 .anyExchange()
                                 .authenticated()
-                )
-                .oauth2ResourceServer(oAuth2 -> oAuth2.jwt(jwtSpec ->
-                        jwtSpec.jwtAuthenticationConverter(converter)));
+                );
         return http.build();
     }
 

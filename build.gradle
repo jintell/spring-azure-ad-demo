@@ -22,15 +22,15 @@ repositories {
 }
 
 ext {
-    set('springCloudAzureVersion', "3.4.0")
+//    set('springCloudAzureVersion', "3.4.0")
 //    set('springCloudAzureVersion', "5.11.0")
+    set('springCloudAzureVersion', "5.12.0")
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -39,7 +39,8 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "com.azure.spring:azure-spring-boot-bom:${springCloudAzureVersion}"
+        mavenBom "com.azure.spring:spring-cloud-azure-dependencies:${springCloudAzureVersion}"
+//        mavenBom "com.azure.spring:azure-spring-boot-bom:${springCloudAzureVersion}"
 //        mavenBom "com.azure.spring:spring-cloud-azure-dependencies:${springCloudAzureVersion}"
     }
 }

@@ -5,6 +5,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * @Author: Josiah Adetayo
  * @Email: josleke@gmail.com, josiah.adetayo@meld-tech.com
@@ -14,13 +16,13 @@ import reactor.core.publisher.Mono;
 public class HomeController {
 
     @GetMapping("/demo/user")
-//    @PreAuthorize("hasAuthority('readUser')")
+    @PreAuthorize("hasAuthority('readUser')")
     public Mono<String> user() {
-        return Mono.just("User read success.");
+        return Mono.just("User: "+ UUID.randomUUID());
     }
 
     @PostMapping("/demo/user")
-//    @PreAuthorize("hasAuthority('updateUser')")
+    @PreAuthorize("hasAuthority('updateUser')")
     public Mono<String> addAser(@RequestBody String userData) {
         return Mono.just(userData + "User read success.");
     }

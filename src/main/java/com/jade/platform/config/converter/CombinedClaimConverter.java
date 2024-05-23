@@ -1,10 +1,11 @@
-package com.jade.platform.config;
+package com.jade.platform.config.converter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
@@ -25,7 +26,7 @@ import java.util.stream.Stream;
  */
 @Component
 @RequiredArgsConstructor
-public class CombinedClaimConverter implements Converter<Jwt, Mono<AbstractAuthenticationToken>> {
+public class CombinedClaimConverter implements Converter<Jwt, AbstractAuthenticationToken> {
     // The combined converter internally fuses the outputs of two converters.
     // One component is the default converter (extracting scp/scope claim information).
     // So we create one instance of this off-the-shelf convert for later use.
@@ -65,7 +66,7 @@ public class CombinedClaimConverter implements Converter<Jwt, Mono<AbstractAuthe
      * object.
      */
     @Override
-    public Mono<AbstractAuthenticationToken> convert(@NonNull Jwt source) {
+    public AbstractAuthenticationToken convert(@NonNull Jwt source) {
         try {
             Collection<GrantedAuthority> authorities =
                     Stream.concat(defaultGrantedAuthoritiesConverter.convert(source).stream()
@@ -73,9 +74,9 @@ public class CombinedClaimConverter implements Converter<Jwt, Mono<AbstractAuthe
                                             scope.getAuthority().replace("SCOPE_", "") :
                                             scope.getAuthority()) )),
                             extractResourceRoles(source).stream()).collect(Collectors.toSet());
-            return Mono.just(new JwtAuthenticationToken(source, authorities));
+            return new JwtAuthenticationToken(source, authorities);
         }catch (NullPointerException exception) {
-            return Mono.error(exception.getCause());
+           throw new BadJwtException(exception.getMessage(), exception);
         }
     }
 
